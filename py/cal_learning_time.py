@@ -4,9 +4,9 @@ import pickle
 
 
 class StudyTimeProcessor:
-    def __init__(self, path, current_year):
+    def __init__(self, path, target_path, current_year):
         self.path = path
-        self.target_path = '../data/学习时长_export.md'  # 等该class稳定了，后面再改为self.path
+        self.target_path = target_path
         self.df_list = []
         self.current_year = current_year
 
@@ -62,6 +62,10 @@ class StudyTimeProcessor:
         table_str = match.group(1)
         df = self._parse_table(table_str)  # 解析表格
         new_df = self._convert_df(df)  # 计算上下晚和更新总时长
+        # 将日期时间列转换为只有日期的字符串
+        new_df['日期'] = new_df['日期'].dt.date.astype(str)
+        # print(new_df)
+        # print(new_df.describe())
         self.df_list.append(new_df)  # 保存处理后的DataFrame
         table_md = new_df.to_markdown(index=False)  # 转为markdown格式
         return f"<div class=\"time-table\">\n\n{table_md}\n\n</div>"
@@ -81,7 +85,7 @@ class StudyTimeProcessor:
 
 
 if __name__ == '__main__':
-    processor = StudyTimeProcessor('../data/学习时长.md', 2024)
+    processor = StudyTimeProcessor('../data/学习时长.md', "../data/学习时长_export.md", 2024)
     processor.process()
     with open('../data/pkl/study_time_df_list.pkl', 'wb') as f:
         pickle.dump(processor.df_list, f)

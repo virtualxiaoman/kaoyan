@@ -111,8 +111,6 @@ class StudyTimeAnalyzer:
         plt.title("Correlation Heatmap")
         plt.savefig("../data/pic/correlation_heatmap.png")  # 保存热力图
 
-        return corr_matrix
-
 
 if __name__ == '__main__':
     with open('../data/pkl/study_time_df_list.pkl', 'rb') as f:
@@ -120,7 +118,9 @@ if __name__ == '__main__':
 
     merger = DataFrameMerger(df_list)
     merger.merge_dfs()
-    print(merger.df_all)
+    # print(merger.df_all)
+    print("数据描述:")
+    print(merger.df_all.describe())
 
     with open('../data/pkl/study_time_df_all.pkl', 'wb') as f:
         pickle.dump(merger.df_all, f)
@@ -131,4 +131,4 @@ if __name__ == '__main__':
     analyzer = StudyTimeAnalyzer(df_all)
     analyzer.plot_total_time()  # 绘制全过程的总时长曲线
     analyzer.plot_monthly_analysis()  # 绘制每个月的学习时长分析图
-    corr_matrix = analyzer.analyze_corr()  # 进行相关性分析
+    analyzer.analyze_corr()  # 进行相关性分析
