@@ -1,7 +1,8 @@
 import pandas as pd
 import re
-from scipy.stats import beta
 import matplotlib.pyplot as plt
+import pickle
+import numpy as np
 
 
 class AccTableAnalyzer:
@@ -95,69 +96,58 @@ class AccTableAnalyzer:
         return acc_results
 
 
-# 使用示例
-analyzer = AccTableAnalyzer('../data/正确率.md')
-analyzer.read_md_tables()
-mastery_results = analyzer.estimate_mastery(beta_prior=1)
-acc_result = analyzer.cal_acc()
+if __name__ == '__main__':
+    analyzer = AccTableAnalyzer('../data/正确率.md')
+    analyzer.read_md_tables()
+    mastery_results = analyzer.estimate_mastery(beta_prior=1)
+    acc_result = analyzer.cal_acc()
 
-print("---------------------------------------------------")
-# 输出掌握程度的估计结果
-for i, mastery in enumerate(mastery_results):
-    print(f"Table {i + 1} mastery estimates:")
-    for section, estimate in mastery.items():
-        print(f"{section}: {estimate:.2%}" if estimate else f"{section}: No data")
+    print("---------------------------------------------------")
+    # 输出掌握程度的估计结果
+    for i, mastery in enumerate(mastery_results):
+        print(f"Table {i + 1} mastery estimates:")
+        for section, estimate in mastery.items():
+            print(f"{section}: {estimate:.2%}" if estimate else f"{section}: No data")
 
-print(acc_result)
+    print(acc_result)
 
-plt.rcParams['font.sans-serif'] = ['SimSun']
-plt.rcParams['axes.unicode_minus'] = False
+    with open('../data/pkl/acc_df_list.pkl', 'wb') as f:
+        pickle.dump(analyzer.df_list, f)
 
+    plt.rcParams['font.sans-serif'] = ['SimSun']
+    plt.rcParams['axes.unicode_minus'] = False
 
-# todo 有问题。1。全书没有化为三个课程。2。全画在第一个图上了。
-def plot_acc_results(acc_result):
-    # 设置画布和子图布局
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
-    course_titles = ['高等数学', '线性代数', '概率论']
-
-    # 迭代每个课程，并在对应的子图上绘制
-    for i, (course, ax) in enumerate(zip(course_titles, axes)):
-        for section, acc_values in acc_result.items():
-            if i < len(acc_values):
-                # 前n个作为实线绘制
-                ax.plot(acc_values[i][:-1], label=section, linestyle='-', marker='o')
-                # 最后一个总准确率作为红色虚线
-                ax.axhline(acc_values[i][-1], color='red', linestyle='--', label=f"{section} (总体)")
-
-        # 设置图表属性
-        ax.set_title(course)
-        ax.set_xlabel("次数")
-        ax.set_ylabel("准确率")
-        ax.legend(loc='best')
-        ax.grid(True)
-
-    plt.tight_layout()
-    plt.show()
+    # 定义不同书的章节
+    books = {
+        '高数': ['高数全书', '极限与连续', '一元微分', '多元微分', '微分方程', '一元积分', '多元积分', '曲线曲面积分',
+                 '无穷级数', '空间解析几何'],
+        '线性代数': ['线代全书', '行列式', '矩阵', '向量', '线性方程组', '特征值', '二次型'],
+        '概率论': ['概率论全书', '随机事件', '随机变量', '多维随机变量', '数字特征', '大数定律', '数理统计', '参数估计',
+                   '假设检验']
+    }
 
 
-# 调用绘图函数
-plot_acc_results(acc_result)
+    # 复用函数绘制书的各章节准确率图
+    def plot_book_accuracy(book_name, chapters):
+        plt.figure()
+        for chapter in chapters:
+            if chapter in acc_result:
+                scores = acc_result[chapter][0]
+                x = np.arange(1, len(scores) + 1)
+                plt.plot(x, scores, linestyle='-', marker='o', label=f"{chapter}")
+                # plt.axhline(y=np.mean(scores), linestyle='-', linewidth=1.2,
+                #             label=f"{chapter} (mean)")
 
-# # 绘制每个板块的准确率曲线
-# for section, acc_values in acc_result.items():
-#     # 提取前 n 个值和总准确率
-#     book_accs = acc_values[0][:-1]  # 前 n 个书籍的准确率
-#     total_acc = acc_values[0][-1]   # 总准确率
-#
-#     # 绘制曲线
-#     plt.figure(figsize=(8, 6))
-#     plt.plot(range(1, len(book_accs) + 1), book_accs, marker='o', label='每本书的准确率')
-#     plt.axhline(total_acc, color='r', linestyle='--', label='总准确率')
-#
-#     # 设置图例、标题和标签
-#     plt.title(f"{section} - 准确率变化曲线")
-#     plt.xlabel("书籍编号")
-#     plt.ylabel("准确率")
-#     plt.ylim(0, 1)
-#     plt.legend()
-#     plt.show()
+        plt.title(f'{book_name} 准确率变化')
+        plt.xticks(x)
+        plt.xlabel('刷题次数')
+        plt.ylabel('准确率')
+        plt.ylim(0.5, 1.05)
+        plt.legend(loc='best')
+        plt.grid(True)
+        plt.show()
+
+
+    # 绘制三本书的准确率变化图
+    for book_name, chapters in books.items():
+        plot_book_accuracy(book_name, chapters)
