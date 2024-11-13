@@ -3,6 +3,7 @@ import re
 import matplotlib.pyplot as plt
 import pickle
 import numpy as np
+import warnings
 
 
 class AccTableAnalyzer:
@@ -119,25 +120,63 @@ if __name__ == '__main__':
 
     # 定义不同书的章节
     books = {
-        '高数': ['高数全书', '极限与连续', '一元微分', '多元微分', '微分方程', '一元积分', '多元积分', '曲线曲面积分',
-                 '无穷级数', '空间解析几何'],
+        '高数': ['高数全书', '极限与连续', '一元微分', '多元微分', '微分方程',
+                 '一元积分', '多元积分', '曲线曲面积分', '无穷级数', '空间解析几何'],
         '线性代数': ['线代全书', '行列式', '矩阵', '向量', '线性方程组', '特征值', '二次型'],
-        '概率论': ['概率论全书', '随机事件', '随机变量', '多维随机变量', '数字特征', '大数定律', '数理统计', '参数估计',
-                   '假设检验']
+        '概率论': ['概率论全书', '随机事件', '随机变量', '多维随机变量', '数字特征',
+                   '大数定律', '数理统计', '参数估计', '假设检验']
     }
 
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.colors import Normalize
+    from matplotlib.cm import ScalarMappable
 
-    # 复用函数绘制书的各章节准确率图
-    def plot_book_accuracy(book_name, chapters):
+
+    def plot_book_accuracy(book_name, chapters, acc_result):
         plt.figure()
+
+        # 计算全书的平均准确率
+        quanshu_avg = None
+        for chapter in chapters:
+            if chapter.endswith('全书'):
+                quanshu_avg = acc_result[chapter][0][-1]  # 取全书的平均准确率
+                print(f"{book_name} 全书平均准确率：{quanshu_avg:.2%}")
+                break
+
+        # 设置颜色映射的范围（将score_diff值映射到较大的范围）
+        # 我们可以通过调整这个范围来扩大颜色差异
+        norm = Normalize(vmin=-0.15, vmax=0.15)  # 增加映射范围，扩大颜色差异
+        cmap = plt.get_cmap('Spectral')  # 或者使用RdYlGn
+
         for chapter in chapters:
             if chapter in acc_result:
-                scores = acc_result[chapter][0]
+                scores = acc_result[chapter][0][:-1]  # 取前面的准确率（每本书的准确率）
+                scores_avg = acc_result[chapter][0][-1]  # 最后一个是总准确率
                 x = np.arange(1, len(scores) + 1)
-                plt.plot(x, scores, linestyle='-', marker='o', label=f"{chapter}")
-                # plt.axhline(y=np.mean(scores), linestyle='-', linewidth=1.2,
-                #             label=f"{chapter} (mean)")
 
+                # 判断当前章节的平均准确率与全书的平均准确率的关系
+                score_diff = 0
+                if quanshu_avg is not None:  # 确保全书平均值已经计算
+                    # 计算与全书平均准确率的差距，使用差距来决定颜色
+                    score_diff = (scores_avg - quanshu_avg) / quanshu_avg  # 差距比例
+                    color = cmap(norm(score_diff))  # 映射到渐变色中
+                    print(f"{chapter} 平均准确率：{scores_avg:.2%}，差距：{score_diff:.2%}")
+                else:
+                    color = 'blue'  # 如果没有全书平均值，则使用蓝色
+                    warnings.warn(f"未找到{book_name}的全书平均准确率！")
+
+                # 如果章节名以"全书"结尾，则重点绘制，使用红色+实线
+                if chapter.endswith('全书'):
+                    plt.plot(x, scores, linestyle='-', color='red', linewidth=2, marker='o', label=f"{chapter}")
+                    plt.axhline(y=scores_avg, color='red', linestyle='-', linewidth=1.2, label=f"{chapter} (mean)")
+                    plt.fill_between(x, scores, alpha=0.1, color='red')
+                else:
+                    alpha = min(0.9, 0.2 + 3 * abs(score_diff))  # 根据差距调整透明度
+                    plt.plot(x, scores, linestyle='--', marker='o', color=color, label=f"{chapter}",
+                             alpha=alpha)
+
+        # 设置图表标题、标签等
         plt.title(f'{book_name} 准确率变化')
         plt.xticks(x)
         plt.xlabel('刷题次数')
@@ -148,6 +187,38 @@ if __name__ == '__main__':
         plt.show()
 
 
+    # 示例调用
+    # plot_book_accuracy("Python书籍", ["章节1", "章节2", "全书"], acc_result)
+
+    # 复用函数绘制书的各章节准确率图
+    # def plot_book_accuracy(book_name, chapters):
+    #     plt.figure()
+    #     for chapter in chapters:
+    #         if chapter in acc_result:
+    #             # print(chapter, acc_result[chapter][0][:-1])
+    #             scores = acc_result[chapter][0][:-1]  # 取前面的准确率（每本书的准确率）
+    #             scores_avg = acc_result[chapter][0][-1]  # 最后一个是总准确率
+    #             x = np.arange(1, len(scores) + 1)
+    #             # 如果scores以"全书"结尾，则重点绘制
+    #             if chapter.endswith('全书'):
+    #                 plt.plot(x, scores, linestyle='-', color='red', linewidth=2, marker='o', label=f"{chapter}")
+    #                 plt.axhline(y=scores_avg, color='red', linestyle='-', linewidth=1.2, label=f"{chapter} (mean)")
+    #                 plt.fill_between(x, scores, alpha=0.1, color='red')
+    #             else:
+    #                 plt.plot(x, scores, linestyle='--', marker='o', label=f"{chapter}")
+    #             # plt.axhline(y=np.mean(scores), linestyle='-', linewidth=1.2,
+    #             #             label=f"{chapter} (mean)")
+    #
+    #     plt.title(f'{book_name} 准确率变化')
+    #     plt.xticks(x)
+    #     plt.xlabel('刷题次数')
+    #     plt.ylabel('准确率')
+    #     plt.ylim(0.5, 1.05)
+    #     plt.legend(loc='best')
+    #     plt.grid(True)
+    #     plt.show()
+
     # 绘制三本书的准确率变化图
     for book_name, chapters in books.items():
-        plot_book_accuracy(book_name, chapters)
+        plot_book_accuracy(book_name, chapters, acc_result)
+        print(f"{book_name} 准确率变化图已绘制！")
