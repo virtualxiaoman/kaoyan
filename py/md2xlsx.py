@@ -77,6 +77,9 @@ class MarkdownTableProcessor:
             # 如果行中的列数与表头列数一致，就加入数据，否则跳过该行
             if len(cells) == len(columns):
                 data.append(cells)
+            else:
+                print(f"[warning] 请注意，可能是代码出错，"
+                      f"因为len(cells)={len(cells)}!=len(columns)={len(columns)}，导致跳过了行：{cells}")
 
         # 返回一个DataFrame
         df = pd.DataFrame(data, columns=columns)
