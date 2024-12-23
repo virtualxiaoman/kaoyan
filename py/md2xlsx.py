@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class MarkdownTableProcessor:
-    def __init__(self, md_file_path, output_dir='../data/xslx', table_class_prefix='acc-table'):
+    def __init__(self, md_file_path, output_dir='../data/xlsx', table_class_prefix='acc-table'):
         """
         初始化Markdown表格处理类
         :param md_file_path: Markdown文件路径
@@ -103,7 +103,7 @@ class MarkdownTableProcessor:
 
 
 class CorrectRateTableProcessor(MarkdownTableProcessor):
-    def __init__(self, md_file_path, output_dir='../data/xslx'):
+    def __init__(self, md_file_path, output_dir='../data/xlsx'):
         """
         初始化用于处理正确率表格的类
         :param md_file_path: Markdown文件路径
@@ -120,7 +120,7 @@ class CorrectRateTableProcessor(MarkdownTableProcessor):
 
 
 class StudyTimeTableProcessor(MarkdownTableProcessor):
-    def __init__(self, md_file_path, output_dir='../data/xslx'):
+    def __init__(self, md_file_path, output_dir='../data/xlsx'):
         """
         初始化用于处理学习时长表格的类
         :param md_file_path: Markdown文件路径

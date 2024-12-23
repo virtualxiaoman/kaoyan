@@ -104,35 +104,19 @@ class StudyTimeProcessor:
 
         # 对于备注非空的行，说明这是某本书写完了，现在对这本书的学习时长进行统计
         # # 找出所有备注非空的行的索引
-        # non_empty_remarks_indices = new_df[new_df['备注'] != ''].index
-        # print(f"备注非空的行索引：{non_empty_remarks_indices}")
+        non_empty_remarks_indices = new_df[new_df['备注'] != ''].index
+        print(f"备注非空的行索引：{non_empty_remarks_indices}")
+        start_index = 0
         #
-        # # 遍历备注非空的行，统计与之相关联的学习时长
-        # for end_index in non_empty_remarks_indices:
-        #     # 获取结束行的日期和备注
-        #     end_date = new_df.loc[end_index, '日期']
-        #     end_remark = new_df.loc[end_index, '备注']
-        #
-        #     # 从结束行的下一行开始，找到下一个非空备注行的索引，如果没有则取到最后一行
-        #     next_non_empty_index = None
-        #     for i in range(end_index + 1, len(new_df)):
-        #         if new_df.loc[i, '备注'] != '':
-        #             next_non_empty_index = i
-        #             break
-        #     # 如果没有找到下一个非空备注行，则取到最后一行
-        #     if next_non_empty_index is None:
-        #         next_non_empty_index = len(new_df) - 1
-        #
-        #     # 筛选出结束行和下一个非空备注行之间的行（包括结束行）
-        #     same_date_rows = new_df[(new_df.index >= end_index) & (new_df.index <= next_non_empty_index)]
-        #     print(f"日期为 {end_date} 的行：")
-        #     print(same_date_rows)
-        #
-        #     # 计算这些行的总时长
-        #     total_study_time = same_date_rows['总时长'].sum()
-        #
-        #     # 更新结束行的备注，添加统计的学习时长
-        #     new_df.loc[end_index, '备注'] += f'；学习时长总计：{total_study_time:.2f}小时'
+        # 遍历备注非空的行，统计与之相关联的学习时长
+        for end_index in non_empty_remarks_indices:
+            # print(f"start_index={start_index}, end_index={end_index}")
+            # 统计从start_index到end_index之间的学习时长，使用'总时长'列的值相加
+            total_study_time = new_df.loc[start_index:end_index, '总时长'].sum()
+            # 更新备注，添加统计的学习时长。注意，因为同时可能开两本书，而学习时长没有体现这个，所以只是本阶段的学习时长。
+            new_df.loc[end_index, '备注'] += f'。本阶段总计{total_study_time:.2f}h'
+            # 更新start_index
+            start_index = end_index + 1
 
         # 合并相同日期的行
         aggregated_df = new_df.groupby('日期').agg(
@@ -161,8 +145,8 @@ class StudyTimeProcessor:
 # 用法示例
 if __name__ == "__main__":
     # 使用示例
-    input_file = '../data/xslx/学习时长-数学2024.xlsx'
-    output_file = '../data/xslx/P-学习时长-数学2024.xlsx'
+    input_file = '../data/xlsx/学习时长-数学2024.xlsx'
+    output_file = '../data/xlsx/P-学习时长-数学2024.xlsx'
     processor = StudyTimeProcessor(input_file, output_file, 2024)
     new_df = processor.process_study_time()
     # print(new_df.head(50))
