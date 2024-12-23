@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
 
 
 class StudyTimePlotter:
@@ -14,6 +15,7 @@ class StudyTimePlotter:
         self.file_name = os.path.basename(file_path)
         print(f"读取文件：{self.file_name}")
 
+        self._init_df()
         self._init_subject()
 
         self.df['日期'] = pd.to_datetime(self.df['日期'])  # 将日期列转换为日期时间格式
@@ -25,6 +27,41 @@ class StudyTimePlotter:
         self.df['Month'] = self.df['日期'].dt.month
         self.df['Week'] = self.df['日期'].dt.isocalendar().week  # 获取ISO周编号
         self.df['Weekday'] = self.df['日期'].dt.weekday + 1  # 0 = Monday, 6 = Sunday (调整为1-7，方便映射)
+
+    # 初始化数据
+    def _init_df(self):
+        # 确保日期列是日期格式
+        df = self.df.copy()
+        df['日期'] = pd.to_datetime(df['日期'])
+
+        # 获取最小和最大日期
+        min_date = df['日期'].min()
+        max_date = df['日期'].max()
+
+        # 生成完整的日期范围
+        all_dates = pd.date_range(min_date, max_date, freq='D')
+
+        # 创建一个新的DataFrame，包含所有日期
+        complete_df = pd.DataFrame({'日期': all_dates})
+
+        # 合并原始数据和完整的日期数据，然后按日期排序
+        merged_df = pd.merge(complete_df, df, on='日期', how='left')
+        merged_df = merged_df.sort_values(by='日期')
+
+        # 填充缺失值
+        merged_df['总时长'] = merged_df['总时长'].fillna(0)
+        merged_df['时间段'] = merged_df['时间段'].fillna('')
+        merged_df['上午'] = merged_df['上午'].fillna(0)
+        merged_df['下午'] = merged_df['下午'].fillna(0)
+        merged_df['晚上'] = merged_df['晚上'].fillna(0)
+        merged_df['备注'] = merged_df['备注'].fillna('')
+
+        # 删除重复的日期行
+        merged_df = merged_df.drop_duplicates(subset='日期', keep='first')
+
+        self.df = merged_df
+        # # 查看第70-80行
+        # print(self.df.iloc[65:72])
 
     # 初始化科目名称
     def _init_subject(self):
@@ -47,15 +84,27 @@ class StudyTimePlotter:
 
     # 绘制总时长折线图
     def plot_total_study_time(self):
+        # 对总时长进行线性回归，然后绘制到图像上
+        X = self.df.index.values.reshape(-1, 1)
+        y = self.df['总时长'].values
+        lr = LinearRegression()
+        lr.fit(X, y)
+        # 提取回归直线的斜率和截距
+        k = lr.coef_[0]
+        b = lr.intercept_
         # 绘制总时长的折线图
         plt.figure(figsize=(10, 6))
         plt.plot(self.df['日期'], self.df['总时长'], label='Total Study Time', color='black',
                  linestyle='-', linewidth=2)
+        # 绘制回归直线
+        plt.plot(self.df['日期'], k * X + b, label=f'Linear Fit: y={k:.2f}x+{b:.2f}', color='green',
+                 linestyle='--', linewidth=2)
         plt.xlabel('Date')
         plt.ylabel('Total Time (hours)')
         plt.title(f'{self.subject} - Total Study Time')
         plt.xticks(rotation=45)
         plt.grid(True)
+        plt.legend()
 
         # 保存图像
         plt.tight_layout()
@@ -175,7 +224,7 @@ class StudyTimePlotter:
 
 # 使用示例
 if __name__ == "__main__":
-    file_path = '../data/xlsx/P-学习时长-数学2024.xlsx'  # 示例路径
+    file_path = '../data/xlsx/P-学习时长-数学2024.xlsx'
     plotter = StudyTimePlotter(file_path)
 
     plotter.plot_total_study_time()  # 绘制总时长图
