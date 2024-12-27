@@ -92,13 +92,23 @@ class StudyTimePlotter:
         # 提取回归直线的斜率和截距
         k = lr.coef_[0]
         b = lr.intercept_
+
+        # 计算总时长的和
+        total_study_time = y.sum()
+
         # 绘制总时长的折线图
         plt.figure(figsize=(10, 6))
         plt.plot(self.df['日期'], self.df['总时长'], label='Total Study Time', color='black',
                  linestyle='-', linewidth=2)
         # 绘制回归直线
-        plt.plot(self.df['日期'], k * X + b, label=f'Linear Fit: y={k:.2f}x+{b:.2f}', color='green',
-                 linestyle='--', linewidth=2)
+        plt.plot(self.df['日期'], k * X + b, label=f'Linear Fit: y={k:.3f}x+{b:.2f}', color='orange',
+                 linestyle='-', linewidth=1)
+
+        # 在图上显示总时长的和
+        plt.text(0.95, 0.95, f'Total Time: {total_study_time:.2f} hours',
+                 horizontalalignment='right', verticalalignment='top',
+                 transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')  # 使用坐标轴相对位置
+
         plt.xlabel('Date')
         plt.ylabel('Total Time (hours)')
         plt.title(f'{self.subject} - Total Study Time')
@@ -118,12 +128,32 @@ class StudyTimePlotter:
             month_data = self.df[self.df['Month'] == month]
             month_str = f"{self.df['Year'].iloc[0]}-{month:02d}"  # 例如 "2024-09"
 
+            X = month_data.index.values.reshape(-1, 1)
+            y = month_data['总时长'].values
+            lr = LinearRegression()
+            lr.fit(X, y)
+            # 提取回归直线的斜率和截距
+            k = lr.coef_[0]
+            b = lr.intercept_
+
+            # 计算总时长的和
+            total_study_time = y.sum()
+
             plt.figure(figsize=(10, 6))
             plt.plot(month_data['日期'], month_data['总时长'], label='Total Time', color='black', linestyle='-',
                      linewidth=2)
             plt.plot(month_data['日期'], month_data['上午'], label='Morning', color='blue', linestyle='--')
             plt.plot(month_data['日期'], month_data['下午'], label='Afternoon', color='red', linestyle='--')
             plt.plot(month_data['日期'], month_data['晚上'], label='Evening', color='green', linestyle='--')
+
+            # 绘制回归直线
+            plt.plot(month_data['日期'], k * X + b, label=f'Linear Fit: y={k:.3f}x+{b:.2f}', color='purple',
+                     linestyle='-', linewidth=1)
+
+            # 在图上显示总时长的和
+            plt.text(0.95, 0.95, f'Total Time: {total_study_time:.2f} hours',
+                     horizontalalignment='right', verticalalignment='top',
+                     transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')
 
             plt.xlabel('Date')
             plt.ylabel('Time (hours)')
@@ -147,6 +177,17 @@ class StudyTimePlotter:
             '晚上': 'sum'
         }).reset_index()
 
+        X = weekly_data['Week'].values.reshape(-1, 1)
+        y = weekly_data['总时长'].values
+        lr = LinearRegression()
+        lr.fit(X, y)
+        # 提取回归直线的斜率和截距
+        k = lr.coef_[0]
+        b = lr.intercept_
+
+        # 计算总时长的和
+        total_study_time = y.sum()
+
         # 绘制图像
         plt.figure(figsize=(10, 6))
         plt.plot(weekly_data['Week'], weekly_data['总时长'], label='Total Time', color='black', linestyle='-',
@@ -154,6 +195,15 @@ class StudyTimePlotter:
         plt.plot(weekly_data['Week'], weekly_data['上午'], label='Morning', color='blue', linestyle='--')
         plt.plot(weekly_data['Week'], weekly_data['下午'], label='Afternoon', color='red', linestyle='--')
         plt.plot(weekly_data['Week'], weekly_data['晚上'], label='Evening', color='green', linestyle='--')
+
+        # 绘制回归直线
+        plt.plot(weekly_data['Week'], k * X + b, label=f'Linear Fit: y={k:.3f}x+{b:.2f}', color='orange',
+                 linestyle='-', linewidth=1)
+
+        # 在图上显示总时长的和
+        plt.text(0.95, 0.95, f'Total Time: {total_study_time:.2f} hours',
+                 horizontalalignment='right', verticalalignment='top',
+                 transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')
 
         plt.xlabel('Week')
         plt.ylabel('Time (hours)')
