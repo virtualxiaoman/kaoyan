@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import os
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
@@ -17,16 +18,7 @@ class StudyTimePlotter:
 
         self._init_df()
         self._init_subject()
-
-        self.df['日期'] = pd.to_datetime(self.df['日期'])  # 将日期列转换为日期时间格式
-        # 提取星期几信息
-        self.df['星期'] = self.df['日期'].dt.day_name()  # 获取星期几（英文）
-
-        # 提取年份和月份信息
-        self.df['Year'] = self.df['日期'].dt.year
-        self.df['Month'] = self.df['日期'].dt.month
-        self.df['Week'] = self.df['日期'].dt.isocalendar().week  # 获取ISO周编号
-        self.df['Weekday'] = self.df['日期'].dt.weekday + 1  # 0 = Monday, 6 = Sunday (调整为1-7，方便映射)
+        self._init_time()
 
     # 初始化数据
     def _init_df(self):
@@ -48,7 +40,7 @@ class StudyTimePlotter:
         merged_df = pd.merge(complete_df, df, on='日期', how='left')
         merged_df = merged_df.sort_values(by='日期')
 
-        # 填充缺失值
+        # 填充缺失值，如果没有记录就说明是没有学习，时长是0
         merged_df['总时长'] = merged_df['总时长'].fillna(0)
         merged_df['时间段'] = merged_df['时间段'].fillna('')
         merged_df['上午'] = merged_df['上午'].fillna(0)
@@ -62,6 +54,30 @@ class StudyTimePlotter:
         self.df = merged_df
         # # 查看第70-80行
         # print(self.df.iloc[65:72])
+
+    def _init_time(self):
+        self.df['日期'] = pd.to_datetime(self.df['日期'], format='%Y.%m.%d')  # 将日期列转换为日期时间格式
+        # 提取星期几信息
+        self.df['星期'] = self.df['日期'].dt.day_name()  # 获取星期几（英文）
+
+        # 提取年份和月份信息
+        self.df['Year'] = self.df['日期'].dt.year
+        self.df['Month'] = self.df['日期'].dt.month
+        self.df['Week'] = self.df['日期'].dt.isocalendar().week  # 获取ISO周编号
+        self.df['Weekday'] = self.df['日期'].dt.weekday + 1  # 0 = Monday, 6 = Sunday (调整为1-7，方便映射)
+
+        # 手动调整最后几天的周次（2024年12月31日至2024年12月29日），不然ISO周次会出错（当成2025年的第一周）
+        last_week_start_date = pd.to_datetime('2024-12-30')
+        last_week_end_date = pd.to_datetime('2024-12-31')
+
+        # 选择日期在2024年12月30日至31日之间的数据，修改为最后一周
+        self.df.loc[(self.df['日期'] >= last_week_start_date) & (
+                self.df['日期'] <= last_week_end_date), 'Week'] = 53  # 改为53
+        self.df.loc[(self.df['日期'] >= last_week_start_date) & (
+                self.df['日期'] <= last_week_end_date), 'Year'] = 2024  # 确保年份为2024
+
+        # # 打印结果检查
+        # print(self.df[['日期', 'Year', 'Month', 'Week', '星期']])
 
     # 初始化科目名称
     def _init_subject(self):
@@ -86,6 +102,7 @@ class StudyTimePlotter:
     def plot_total_study_time(self):
         # 对总时长进行线性回归，然后绘制到图像上
         X = self.df.index.values.reshape(-1, 1)
+        X = X - X.min()  # 从0开始
         y = self.df['总时长'].values
         lr = LinearRegression()
         lr.fit(X, y)
@@ -129,6 +146,9 @@ class StudyTimePlotter:
             month_str = f"{self.df['Year'].iloc[0]}-{month:02d}"  # 例如 "2024-09"
 
             X = month_data.index.values.reshape(-1, 1)
+            # 找到X的最小值，然后减去这个最小值，这样X就从0开始了
+            X = X - X.min()
+            print(X)
             y = month_data['总时长'].values
             lr = LinearRegression()
             lr.fit(X, y)
@@ -178,7 +198,9 @@ class StudyTimePlotter:
         }).reset_index()
 
         X = weekly_data['Week'].values.reshape(-1, 1)
+        X = X - X.min()  # 从0开始
         y = weekly_data['总时长'].values
+        # print(weekly_data)
         lr = LinearRegression()
         lr.fit(X, y)
         # 提取回归直线的斜率和截距
@@ -208,12 +230,13 @@ class StudyTimePlotter:
         plt.xlabel('Week')
         plt.ylabel('Time (hours)')
         plt.title(f'{self.subject} - Weekly Study Time')
+        plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))  # 设置x轴刻度为整数
         plt.legend()
         plt.grid(True)
 
         # 保存图像
         plt.tight_layout()
-        plt.savefig(f'../data/pic/学习时长/{self.subject}-week.png', dpi=900)
+        plt.savefig(f'../data/pic/学习时长/{self.subject}-weekly.png', dpi=900)
         plt.close()
 
         # 输出按周统计的数据

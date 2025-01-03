@@ -37,14 +37,21 @@ class AccuracyAnalyzer:
         plt.rcParams['font.sans-serif'] = ['SimSun']  # 设置中文显示
         plt.rcParams['axes.unicode_minus'] = False  # 处理负号显示问题
 
-        x = np.arange(1, len(self.acc_df) + 1)  # 横轴为刷题次数，假设每一行代表一次刷题
+        # 将x设为index+df的'书名'列，这样就可以显示次数+书名
+        df_temp = self.df[self.df['书名'] != 'Sum'].copy()
+        x = df_temp.index + 1
+        x = x.astype(str) + '-' + df_temp['书名']
+        # # 在x最前面加上一个0，这样就可以显示legend
+        # x = np.insert(x.values, 0, '0')
+        # print(x)
+        # x = np.arange(1, len(self.acc_df) + 1)  # 横轴为刷题次数，假设每一行代表一次刷题
 
         # 绘制全书的正确率
         full_book_rate = self.acc_df.iloc[:, 0]  # 假设第一个章节为全书
         full_book_acc_sum = float(self.acc_sum_df.iloc[:, 0].values[0])
         print(f"{self.subject}全书平均正确率：{full_book_acc_sum:.2f}")
         plt.figure(figsize=(10, 6))
-        plt.plot(x, full_book_rate, linestyle='-', color='#66CCFF', linewidth=3, marker='o',
+        plt.plot(x, full_book_rate, linestyle='-', color='#66CCFF', linewidth=4, marker='o',
                  label=f'全书-{full_book_acc_sum:.2f}')
         plt.fill_between(x, full_book_rate, alpha=0.1, color='red')
 
@@ -89,11 +96,13 @@ class AccuracyAnalyzer:
         # 设置图表
         plt.xlabel('刷题次数')
         plt.ylabel('正确率')
-        plt.xlim(0, len(self.acc_df))  # 设置从0开始时为了显示legend，不然好挤啊
+        plt.xlim(-1, len(self.acc_df)-1)  # 设置从-1开始时为了显示legend，不然好挤啊
+        # plt.xticks(rotation=45)  # 设置旋转45度
         plt.ylim(0.5, 1.05)
         plt.grid(True)
         plt.legend(loc='upper left')
         plt.title(f'{self.subject} 正确率随练习的变化')
+        plt.tight_layout()
 
         # 保存图表为PNG文件
         plt.savefig(self.save_path, dpi=900)
