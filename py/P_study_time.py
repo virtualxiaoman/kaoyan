@@ -142,12 +142,14 @@ class StudyTimeProcessor:
         print(f"处理完成，结果保存为 {self.output_path}")
 
 
-# 用法示例
-if __name__ == "__main__":
-    # 使用示例
-    input_file = '../data/xlsx/学习时长-数学2024.xlsx'
-    output_file = '../data/xlsx/P-学习时长-数学2024.xlsx'
-    processor = StudyTimeProcessor(input_file, output_file, 2024)
+def main(input_file, output_file, current_year):
+    processor = StudyTimeProcessor(input_file, output_file, current_year)
     new_df = processor.process_study_time()
     # print(new_df.head(50))
     processor.process_df(new_df)
+
+
+# 用法示例
+if __name__ == "__main__":
+    main("../data/xlsx/学习时长-数学2024.xlsx", "../data/xlsx/P-学习时长-数学2024.xlsx", 2024)
+    main("../data/xlsx/学习时长-数学2025.xlsx", "../data/xlsx/P-学习时长-数学2025.xlsx", 2025)

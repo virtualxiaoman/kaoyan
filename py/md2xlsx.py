@@ -38,7 +38,7 @@ class MarkdownTableProcessor:
         for table in tables:
             # 提取表格的名称（如 acc-table-高数2024）
             table_name = table[0].split('-')[-1]
-            print(f"正在处理表格 '{table_name}'")
+            # print(f"正在处理表格 '{table_name}'")
             table_content = table[1].strip()
             # print(table_content)
 
@@ -99,7 +99,7 @@ class MarkdownTableProcessor:
             output_file = os.path.join(self.output_dir, f"{file_prefix}-{table_name}.xlsx")
             # 将DataFrame保存为Excel
             df.to_excel(output_file, index=False)
-            print(f"表格 '{table_name}' 已保存至 {output_file}")
+            print(f"[log] 表格 '{table_name}' 已保存至 {output_file}")
 
 
 class CorrectRateTableProcessor(MarkdownTableProcessor):
@@ -136,7 +136,7 @@ class StudyTimeTableProcessor(MarkdownTableProcessor):
         super().save_tables_to_excel(file_prefix)
 
 
-if __name__ == '__main__':
+def main():
     # 处理正确率表格
     correct_rate_processor = CorrectRateTableProcessor(md_file_path='../data/正确率.md')
     correct_rate_processor.save_tables_to_excel()
@@ -144,3 +144,7 @@ if __name__ == '__main__':
     # 处理学习时长表格
     study_duration_processor = StudyTimeTableProcessor(md_file_path='../data/学习时长.md')
     study_duration_processor.save_tables_to_excel()
+
+
+if __name__ == '__main__':
+    main()

@@ -148,7 +148,7 @@ class StudyTimePlotter:
             X = month_data.index.values.reshape(-1, 1)
             # 找到X的最小值，然后减去这个最小值，这样X就从0开始了
             X = X - X.min()
-            print(X)
+            # print(X)
             y = month_data['总时长'].values
             lr = LinearRegression()
             lr.fit(X, y)
@@ -274,10 +274,10 @@ class StudyTimePlotter:
         plt.savefig(f'../data/pic/学习时长/{self.subject}-week_day.png', dpi=600)
         plt.close()
 
-        # 输出按周几统计的数据
-        for day, row in weekday_data.iterrows():
-            print(f"星期{day}: Total={row['总时长']:.2f}h, 上午{row['上午']:.2f}h, "
-                  f"下午{row['下午']:.2f}h, 晚上{row['晚上']:.2f}h")
+        # # 输出按周几统计的数据
+        # for day, row in weekday_data.iterrows():
+        #     print(f"星期{day}: Total={row['总时长']:.2f}h, 上午{row['上午']:.2f}h, "
+        #           f"下午{row['下午']:.2f}h, 晚上{row['晚上']:.2f}h")
 
     def plot_corr(self):
         # 对总时长、上午、下午、晚上进行相关性分析
@@ -295,9 +295,7 @@ class StudyTimePlotter:
         plt.close()
 
 
-# 使用示例
-if __name__ == "__main__":
-    file_path = '../data/xlsx/P-学习时长-数学2024.xlsx'
+def main(file_path):
     plotter = StudyTimePlotter(file_path)
 
     plotter.plot_total_study_time()  # 绘制总时长图
@@ -305,3 +303,9 @@ if __name__ == "__main__":
     plotter.plot_weekly_study_time()  # 绘制每周图
     plotter.plot_weekday_study_time()  # 绘制每周几图
     plotter.plot_corr()  # 绘制相关性矩阵
+
+
+# 使用示例
+if __name__ == "__main__":
+    main("../data/xlsx/P-学习时长-数学2024.xlsx")
+    main("../data/xlsx/P-学习时长-数学2025.xlsx")

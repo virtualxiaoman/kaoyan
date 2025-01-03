@@ -54,7 +54,7 @@ class AccuracyProcessor:
 
         # 输出错误的元素
         for item in error_elements:
-            print(f"Row {item[0]} - Column {item[1]}: {item[2]}")
+            print(f"[ERROR] Row {item[0]} - Column {item[1]}: {item[2]}")
 
     def extract_and_calculate_accuracy(self):
         # 遍历表格的每一列（从第4列开始，包含每个学科的正确率信息）
