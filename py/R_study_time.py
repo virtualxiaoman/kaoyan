@@ -282,8 +282,8 @@ class StudyTimePlotter:
     def plot_corr(self):
         # 对总时长、上午、下午、晚上进行相关性分析
         df_corr = self.df[['总时长', '上午', '下午', '晚上']].corr()
-        print("相关性矩阵：")
-        print(df_corr)
+        # print("相关性矩阵：")
+        # print(df_corr)
         # 绘制相关性矩阵热力图
         plt.figure(figsize=(6, 6))
         sns.heatmap(df_corr, annot=True, cmap='coolwarm', fmt=".2f",

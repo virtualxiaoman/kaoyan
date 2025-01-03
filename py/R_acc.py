@@ -106,7 +106,7 @@ class AccuracyAnalyzer:
 
         # 保存图表为PNG文件
         plt.savefig(self.save_path, dpi=900)
-        plt.show()
+        # plt.show()
 
 
 def main(path):
