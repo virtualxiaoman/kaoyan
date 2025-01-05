@@ -25,7 +25,7 @@ class AccuracyProcessor:
             full_book_acc = float(full_book_correct.split('=')[1].strip('%')) / 100
             full_book_calculated_rate = full_book_x / full_book_y
             if abs(full_book_calculated_rate - full_book_acc) > 0.01:
-                error_elements.append((i, 3, full_book_correct))
+                error_elements.append((i, 3, full_book_correct, 'x/y比例错误'))
 
             for col in self.df.columns[4:]:
                 if isinstance(row[col], str):  # 确保该列是类似 '92/109=84.4%' 的格式
@@ -39,14 +39,15 @@ class AccuracyProcessor:
 
                         # 检查比例是否一致
                         if abs(x_num / y_num - rate) > 0.01:  # 如果差异大于0.01，就认为是错误的
-                            error_elements.append((i, col, row[col]))
+                            error_elements.append((i, col, row[col], 'x/y比例错误'))
 
                         # 检查与全书的x/y比例是否一致
                         sum_x = sum([int(x.split('/')[0]) for x in row[4:].dropna() if isinstance(x, str) and '/' in x])
                         sum_y = sum([int(x.split('/')[1].split('=')[0]) for x in row[4:].dropna() if
                                      isinstance(x, str) and '/' in x])
                         if sum_x != full_book_x or sum_y != full_book_y:
-                            error_elements.append((i, col, row[col]))
+                            error_elements.append((i, col, row[col],
+                                                   f'与全书x/y比例不一致,sum_x={sum_x}, sum_y={sum_y}'))
 
                     except Exception as e:
                         error_elements.append((i, col, row[col]))
@@ -54,7 +55,7 @@ class AccuracyProcessor:
 
         # 输出错误的元素
         for item in error_elements:
-            print(f"[ERROR] Row {item[0]} - Column {item[1]}: {item[2]}")
+            print(f"[ERROR] Row {item[0]} - Column {item[1]}: {item[2]}-错误类型: {item[3]}")
 
     def extract_and_calculate_accuracy(self):
         # 遍历表格的每一列（从第4列开始，包含每个学科的正确率信息）
