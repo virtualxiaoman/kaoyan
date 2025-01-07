@@ -8,7 +8,7 @@ class AccuracyProcessor:
         self.file_path = file_path  # "../data/xlsx/正确率-高数2024.xlsx"
         self.df = pd.read_excel(file_path)
         self.subject = file_path.split('-')[-1].split('.')[0].split('2')[0]  # 2是年份，如2024
-        print(f"正在处理 {self.subject} 的正确率数据...")
+        print(f"[log] 正在处理 {self.subject} 的正确率数据...")
         self.validate_correct_rate()
 
     def validate_correct_rate(self):
@@ -51,11 +51,11 @@ class AccuracyProcessor:
 
                     except Exception as e:
                         error_elements.append((i, col, row[col]))
-                        print(f"Error parsing value {row[col]} in row {i}, column {col}: {e}")
+                        print(f"\033[91m [Error] parsing value {row[col]} in row {i}, column {col}: {e}\033[0m")
 
         # 输出错误的元素
         for item in error_elements:
-            print(f"[ERROR] Row {item[0]} - Column {item[1]}: {item[2]}-错误类型: {item[3]}")
+            print(f"\033[91m [ERROR] Row {item[0]} - Column {item[1]}: {item[2]}-错误类型: {item[3]}\033[0m")
 
     def extract_and_calculate_accuracy(self):
         # 遍历表格的每一列（从第4列开始，包含每个学科的正确率信息）
@@ -119,7 +119,7 @@ class AccuracyProcessor:
                                  '数理统计', '参数估计', '假设检验']
         else:
             columns_to_remove = []
-            print("未知学科，无法删除列")
+            print("[ERROR] 未知学科，无法删除列")
 
         self.df.drop(columns=columns_to_remove, inplace=True)
 
@@ -127,7 +127,7 @@ class AccuracyProcessor:
         # 生成保存路径，文件名前加上 'P-'
         save_path = self.file_path.replace('正确率', 'P-正确率')
         self.df.to_excel(save_path, index=False)
-        print(f"文件已保存为: {save_path}")
+        print(f"[log] 文件已保存为: {save_path}")
 
 
 def main(path):

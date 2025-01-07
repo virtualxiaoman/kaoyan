@@ -14,7 +14,7 @@ class StudyTimePlotter:
         # 读取表格数据
         self.df = pd.read_excel(file_path)
         self.file_name = os.path.basename(file_path)
-        print(f"读取文件：{self.file_name}")
+        print(f"[log] 读取文件：{self.file_name}")
 
         self._init_df()
         self._init_subject()
@@ -96,7 +96,7 @@ class StudyTimePlotter:
         }
         # 替换为英文
         self.subject = subject_dict.get(subject_name, subject_name)
-        print(f"科目：{self.subject}")
+        # print(f"[log] 科目：{self.subject}")
 
     # 绘制总时长折线图
     def plot_total_study_time(self):

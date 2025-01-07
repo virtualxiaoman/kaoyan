@@ -49,10 +49,10 @@ class AccuracyAnalyzer:
         # 绘制全书的正确率
         full_book_rate = self.acc_df.iloc[:, 0]  # 假设第一个章节为全书
         full_book_acc_sum = float(self.acc_sum_df.iloc[:, 0].values[0])
-        print(f"{self.subject}全书平均正确率：{full_book_acc_sum:.2f}")
+        print(f"[log] {self.subject}全书平均正确率：{full_book_acc_sum:.5f}")
         plt.figure(figsize=(10, 6))
         plt.plot(x, full_book_rate, linestyle='-', color='#66CCFF', linewidth=4, marker='o',
-                 label=f'全书-{full_book_acc_sum:.2f}')
+                 label=f'全书-{full_book_acc_sum:.3f}')
         plt.fill_between(x, full_book_rate, alpha=0.1, color='red')
 
         # # 设置颜色映射，确保在0到1之间
