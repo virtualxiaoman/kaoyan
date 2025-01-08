@@ -105,7 +105,7 @@ class StudyTimeProcessor:
         # 对于备注非空的行，说明这是某本书写完了，现在对这本书的学习时长进行统计
         # # 找出所有备注非空的行的索引
         non_empty_remarks_indices = new_df[new_df['备注'] != ''].index
-        print(f"[log] 备注非空的行索引：{non_empty_remarks_indices}")
+        # print(f"[log] 备注非空的行索引：{non_empty_remarks_indices}")
         start_index = 0
         #
         # 遍历备注非空的行，统计与之相关联的学习时长

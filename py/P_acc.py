@@ -8,7 +8,7 @@ class AccuracyProcessor:
         self.file_path = file_path  # "../data/xlsx/正确率-高数2024.xlsx"
         self.df = pd.read_excel(file_path)
         self.subject = file_path.split('-')[-1].split('.')[0].split('2')[0]  # 2是年份，如2024
-        print(f"[log] 正在处理 {self.subject} 的正确率数据...")
+        # print(f"[log] 正在处理 {self.subject} 的正确率数据...")
         self.validate_correct_rate()
 
     def validate_correct_rate(self):
