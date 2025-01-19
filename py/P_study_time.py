@@ -153,3 +153,5 @@ def main(input_file, output_file, current_year):
 if __name__ == "__main__":
     main("../data/xlsx/学习时长-数学2024.xlsx", "../data/xlsx/P-学习时长-数学2024.xlsx", 2024)
     main("../data/xlsx/学习时长-数学2025.xlsx", "../data/xlsx/P-学习时长-数学2025.xlsx", 2025)
+    main("../data/xlsx/学习时长-cs2025.xlsx", "../data/xlsx/P-学习时长-cs2025.xlsx", 2025)
+    main("../data/xlsx/学习时长-英语2025.xlsx", "../data/xlsx/P-学习时长-英语2025.xlsx", 2025)
