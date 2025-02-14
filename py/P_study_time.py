@@ -1,3 +1,5 @@
+# 学习时长处理
+
 import pandas as pd
 from datetime import datetime
 
@@ -142,6 +144,49 @@ class StudyTimeProcessor:
         print(f"[log] 处理完成，结果保存为 {self.output_path}")
 
 
+def merge_2025():
+    # 读取三个Excel文件
+    df_math = pd.read_excel("../data/xlsx/P-学习时长-数学2025.xlsx")
+    df_cs = pd.read_excel("../data/xlsx/P-学习时长-cs2025.xlsx")
+    df_eng = pd.read_excel("../data/xlsx/P-学习时长-英语2025.xlsx")
+    # 未来加上政治
+    # df_pol = pd.read_excel("../data/xlsx/P-学习时长-政治2025.xlsx")
+
+    # 合并数据框
+    combined = pd.concat([df_math, df_cs, df_eng], ignore_index=True)
+    # combined = pd.concat([df_math, df_cs, df_eng, df_pol], ignore_index=True)
+
+    # 预处理数据
+    # 1. 填充字符串列的NaN值为空字符串
+    combined['时间段'] = combined['时间段'].fillna('')
+    combined['备注'] = combined['备注'].fillna('')
+
+    # 2. 转换数值列并处理无效值
+    numeric_cols = ['总时长', '上午', '下午', '晚上']
+    for col in numeric_cols:
+        combined[col] = pd.to_numeric(combined[col], errors='coerce').fillna(0)
+
+    # 定义聚合方式
+    agg_dict = {
+        '总时长': 'sum',
+        '时间段': lambda x: ', '.join(filter(None, x)),  # 连接非空内容
+        '上午': 'sum',
+        '下午': 'sum',
+        '晚上': 'sum',
+        '备注': lambda x: ', '.join(filter(None, x)),
+    }
+
+    # 执行分组聚合
+    merged = combined.groupby('日期', as_index=False).agg(agg_dict)
+
+    # 按日期排序
+    merged = merged.sort_values('日期').reset_index(drop=True)
+
+    # 保存结果（可选）
+    merged.to_excel("../data/xlsx/P-学习时长-总2025.xlsx", index=False)
+    print("[log] 2025年学习时长数据合并完成")
+
+
 def main(input_file, output_file, current_year):
     processor = StudyTimeProcessor(input_file, output_file, current_year)
     new_df = processor.process_study_time()
@@ -155,3 +200,4 @@ if __name__ == "__main__":
     main("../data/xlsx/学习时长-数学2025.xlsx", "../data/xlsx/P-学习时长-数学2025.xlsx", 2025)
     main("../data/xlsx/学习时长-cs2025.xlsx", "../data/xlsx/P-学习时长-cs2025.xlsx", 2025)
     main("../data/xlsx/学习时长-英语2025.xlsx", "../data/xlsx/P-学习时长-英语2025.xlsx", 2025)
+    merge_2025()

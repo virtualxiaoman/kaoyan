@@ -1,3 +1,5 @@
+# 学习时长分析与绘图
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -88,11 +90,13 @@ class StudyTimePlotter:
             '数学2024': 'Math2024',
             '英语2024': 'English2024',
             '政治2024': 'Politics2024',
-            '计算机2024': 'CS2024',
+            'cs2024': 'CS2024',
+            '总2024': 'Total2024',
             '数学2025': 'Math2025',
             '英语2025': 'English2025',
             '政治2025': 'Politics2025',
-            '计算机2025': 'CS2025'
+            'cs2025': 'CS2025',
+            '总2025': 'Total2025'
         }
         # 替换为英文
         self.subject = subject_dict.get(subject_name, subject_name)
@@ -310,3 +314,4 @@ if __name__ == "__main__":
     main("../data/xlsx/P-学习时长-数学2025.xlsx")
     main("../data/xlsx/P-学习时长-cs2025.xlsx")
     main("../data/xlsx/P-学习时长-英语2025.xlsx")
+    main("../data/xlsx/P-学习时长-总2025.xlsx")
