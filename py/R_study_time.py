@@ -130,6 +130,12 @@ class StudyTimePlotter:
                  horizontalalignment='right', verticalalignment='top',
                  transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')  # 使用坐标轴相对位置
 
+        # 显示平均值
+        mean_study_time = y.mean()
+        plt.text(0.95, 0.85, f'Mean Time: {mean_study_time:.2f} hours',
+                 horizontalalignment='right', verticalalignment='top',
+                 transform=plt.gca().transAxes, fontsize=16, color='blue', weight='bold')  # 使用坐标轴相对位置
+
         plt.xlabel('Date')
         plt.ylabel('Total Time (hours)')
         plt.title(f'{self.subject} - Total Study Time')
@@ -178,6 +184,12 @@ class StudyTimePlotter:
             plt.text(0.95, 0.95, f'Total Time: {total_study_time:.2f} hours',
                      horizontalalignment='right', verticalalignment='top',
                      transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')
+
+            # 显示平均值
+            mean_study_time = y.mean()
+            plt.text(0.95, 0.85, f'Mean Time: {mean_study_time:.2f} hours',
+                     horizontalalignment='right', verticalalignment='top',
+                     transform=plt.gca().transAxes, fontsize=16, color='blue', weight='bold')
 
             plt.xlabel('Date')
             plt.ylabel('Time (hours)')
@@ -230,6 +242,12 @@ class StudyTimePlotter:
         plt.text(0.95, 0.95, f'Total Time: {total_study_time:.2f} hours',
                  horizontalalignment='right', verticalalignment='top',
                  transform=plt.gca().transAxes, fontsize=16, color='red', weight='bold')
+
+        # 显示平均值
+        mean_study_time = y.mean()
+        plt.text(0.95, 0.85, f'Mean Time: {mean_study_time:.2f} hours',
+                 horizontalalignment='right', verticalalignment='top',
+                 transform=plt.gca().transAxes, fontsize=16, color='blue', weight='bold')
 
         plt.xlabel('Week')
         plt.ylabel('Time (hours)')
