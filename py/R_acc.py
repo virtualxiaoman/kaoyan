@@ -99,8 +99,8 @@ class AccuracyAnalyzer:
         plt.xlabel('刷题次数')
         plt.ylabel('正确率')
         plt.xlim(-1, len(self.acc_df)-1)  # 设置从-1开始时为了显示legend，不然好挤啊
-        # plt.xticks(rotation=45)  # 设置旋转45度
-        plt.ylim(0.5, 1.05)
+        plt.xticks(rotation=45, fontsize=8)  # 设置旋转45度
+        plt.ylim(0.4, 1.05)
         plt.grid(True)
         plt.legend(loc='upper left')
         plt.title(f'{self.subject} 正确率随练习的变化')
