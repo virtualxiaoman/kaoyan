@@ -67,10 +67,12 @@ def draw_accuracy_plot(data, question_per=5, subject="未设置"):
         chunk = correct_rates[start:end]
         # 计算区间平均正确率
         avg_rate = float(np.mean(chunk))
+        # 计算标准差
+        std_rate = float(np.std(chunk))
 
         # 计算标注位置（区间中间）
         mid_x = (start + end + 1) / 2
-        plt.text(mid_x, avg_rate, f'{avg_rate:.1f}%', ha='center', va='bottom',
+        plt.text(mid_x, avg_rate, f'{avg_rate:.0f}%±{std_rate:.0f}%', ha='center', va='bottom',
                  fontsize=8, bbox=dict(facecolor='white', alpha=0.6))
 
     plt.xlabel('题目序号', fontsize=12)

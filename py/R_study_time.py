@@ -328,7 +328,7 @@ def main(file_path):
 
 
 if __name__ == "__main__":
-    main("../data/xlsx/P-学习时长-数学2024.xlsx")
+    # main("../data/xlsx/P-学习时长-数学2024.xlsx")
     main("../data/xlsx/P-学习时长-数学2025.xlsx")
     main("../data/xlsx/P-学习时长-cs2025.xlsx")
     main("../data/xlsx/P-学习时长-英语2025.xlsx")
