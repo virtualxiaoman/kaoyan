@@ -13,6 +13,7 @@ scripts = [
     'P_acc.py',
     'R_study_time.py',
     'R_acc.py',
+    'P_acc_eng.py',
 ]
 
 # 依次执行每个脚本

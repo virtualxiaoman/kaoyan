@@ -75,7 +75,7 @@ def draw_accuracy_plot(data, question_per=5, subject="未设置"):
         plt.text(mid_x, avg_rate, f'{avg_rate:.0f}%±{std_rate:.0f}%', ha='center', va='bottom',
                  fontsize=8, bbox=dict(facecolor='white', alpha=0.6))
 
-    plt.xlabel('题目序号', fontsize=12)
+    plt.xlabel('文章序号', fontsize=12)
     plt.ylabel('正确率 (%)', fontsize=12)
     plt.title(f"{subject}正确率变化趋势", fontsize=14)
     plt.legend(loc='upper left')
