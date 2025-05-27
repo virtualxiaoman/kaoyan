@@ -1,143 +1,159 @@
+# 总成绩＝0.6*初试/5＋0.4*复试
+
+import os
+import re
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import numpy as np
-from matplotlib.ticker import MaxNLocator
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
-# 设置pd列全部显示
-pd.set_option('display.max_columns', None)
 
 
-class ExamScoreAnalyzer:
+class AdmissionDataAnalyzer:
     def __init__(self, df_path):
         self.df_path = df_path
+        self.year = self._extract_year_from_path()
+        self.df = self._load_data()
+        self.analysis_columns = ['序号', '初试成绩', '复试成绩', '总成绩']
+        self.analysis_df = self.df[self.analysis_columns]
 
-    def read_and_filter_data(self):
-        # 读取Excel文件
-        df = pd.read_excel(self.df_path)
-        print(df)
-        # 提取指定的四列
-        filtered_df = df[['序号', '初试成绩', '复试成绩', '总成绩']]
-        return filtered_df
+    def _extract_year_from_path(self):
+        """从文件路径中提取年份"""
+        match = re.search(r"\d+", os.path.basename(self.df_path))
+        if not match:
+            raise ValueError("文件名中未找到年份数字")
+        return match.group()
 
-    def compute_descriptive_statistics(self, df):
-        # 计算描述性统计信息，包括均值、中位数、75%分位数等
-        stats_summary = df.describe()
-        # 计算标准差、偏度、峰度等更多统计量
-        extended_stats = pd.DataFrame({
-            'mean': df.mean(),
-            'median': df.median(),
-            '75%_percentile': df.quantile(0.75),
-            'min': df.min(),
-            'max': df.max(),
-            'std': df.std(),
-            'skewness': df.skew(),
-            'kurtosis': df.kurtosis()
-        })
-        return extended_stats
+    def _load_data(self):
+        """加载Excel数据"""
+        return pd.read_excel(self.df_path)
 
-    def analyze_score_relationships(self, df):
-        # 计算成绩之间的相关性
-        # 使用皮尔逊相关系数
-        pearson_corr = df.corr(method='pearson')
-        # 使用斯皮尔曼秩相关系数
-        spearman_corr = df.corr(method='spearman')
-        return pearson_corr, spearman_corr
+    def _ensure_dir_exists(self, path):
+        """确保目录存在"""
+        os.makedirs(os.path.dirname(path), exist_ok=True)
 
-    def visualize_score_distributions(self, df):
-        # 绘制成绩分布的箱线图和直方图
-        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    def save_pairplot(self):
+        """绘制并保存pairplot"""
+        plt.figure(figsize=(10, 8))
+        g = sns.pairplot(self.analysis_df.drop(columns=['序号']))
+        output_path = f"../data/pic/软微-录取/{self.year}-pairplot.png"
+        self._ensure_dir_exists(output_path)
+        g.savefig(output_path, dpi=900)
+        plt.close()
 
-        # 箱线图
-        sns.boxplot(data=df.drop(columns=['序号']), ax=axs[0])
-        axs[0].set_title('成绩分布箱线图')
-        axs[0].set_xticklabels(['初试成绩', '复试成绩', '总成绩'], rotation=45)
-
-        # 直方图
-        axs[1].hist([df['初试成绩'], df['复试成绩'], df['总成绩']],
-                    label=['初试成绩', '复试成绩', '总成绩'],
-                    bins=10,
-                    stacked=True)
-        axs[1].set_title('成绩分布直方图')
-        axs[1].legend()
-
-        plt.tight_layout()
-        plt.show()
-
-    def visualize_score_correlations(self, df):
-        # 绘制成绩之间的散点图矩阵
-        sns.pairplot(df.drop(columns=['序号']))
-        plt.suptitle('成绩之间的关系散点图矩阵')
-        plt.tight_layout()
-        plt.show()
-
-    def visualize_score_correlation_map(self, pearson_corr):
-        # 绘制相关性热图
+    def save_corr_heatmap(self):
+        """绘制并保存相关系数热力图"""
         plt.figure(figsize=(8, 6))
-        sns.heatmap(pearson_corr, annot=True, cmap='coolwarm',
-                    cbar_kws={'label': '皮尔逊相关系数'})
-        plt.title('成绩之间的相关性热图')
-        plt.show()
+        corr = self.analysis_df.corr()
+        sns.heatmap(corr, annot=True, cmap='coolwarm')
+        plt.title(f"{self.year} 成绩相关系数矩阵")
+        output_path = f"../data/pic/软微-录取/{self.year}-corr.png"
+        self._ensure_dir_exists(output_path)
+        plt.savefig(output_path, dpi=900)
+        plt.close()
 
-    def visualize_score_line_chart(self, df):
-        # 将序号作为横轴，绘制各成绩的折线图
-        plt.figure(figsize=(12, 6))
-        plt.plot(df['序号'], df['初试成绩'], 'o-', label='初试成绩')
-        plt.plot(df['序号'], df['复试成绩'], 's-', label='复试成绩')
-        plt.plot(df['序号'], df['总成绩'], 'D-', label='总成绩')
-        plt.title('各考生三类成绩对比')
-        plt.xlabel('序号')
-        plt.ylabel('成绩')
-        plt.legend()
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
-        plt.show()
+    def save_split_axis_plot(self):
+        """绘制分轴折线图（含回归方程）"""
+        plt.figure(figsize=(12, 8))
+        gs = gridspec.GridSpec(2, 1, height_ratios=[1, 1], hspace=0.05)
 
-    def run_analysis(self):
-        # 执行完整的分析流程
-        filtered_df = self.read_and_filter_data()
+        ax1 = plt.subplot(gs[0])
+        ax2 = plt.subplot(gs[1])
 
-        # 计算统计特征
-        stats = self.compute_descriptive_statistics(filtered_df)
-        print("描述性统计信息:")
-        print(stats)
-        print("\n")
+        x = self.analysis_df['序号']
+        line_style = '--'
+        line_alpha = 0.6
 
-        # 分析成绩之间的关系
-        pearson_corr, spearman_corr = self.analyze_score_relationships(filtered_df)
-        print("皮尔逊相关系数:")
-        print(pearson_corr)
-        print("\n斯皮尔曼相关系数:")
-        print(spearman_corr)
-        print("\n")
+        # 初试成绩部分
+        y1 = self.analysis_df['初试成绩']
+        ax1.plot(x, y1, color='tab:blue', label='初试成绩')
 
-        # 可视化成绩分布
-        self.visualize_score_distributions(filtered_df)
+        # 计算并添加回归线
+        slope1, intercept1 = np.polyfit(x, y1, 1)
+        reg_label1 = f'y={slope1:.3f}x+{intercept1:.1f}'
+        ax1.plot(x, slope1 * x + intercept1,
+                 color='tab:blue', linestyle=line_style,
+                 alpha=line_alpha, label=reg_label1)
 
-        # 可视化成绩关系
-        self.visualize_score_correlations(filtered_df)
+        # 复试成绩部分
+        y2 = self.analysis_df['复试成绩']
+        ax2.plot(x, y2, color='tab:orange', label='复试成绩')
 
-        # 绘制相关性热图
-        self.visualize_score_correlation_map(pearson_corr)
+        # 计算并添加回归线
+        slope2, intercept2 = np.polyfit(x, y2, 1)
+        reg_label2 = f'y={slope2:.3f}x+{intercept2:.1f}'
+        ax2.plot(x, slope2 * x + intercept2,
+                 color='tab:orange', linestyle=line_style,
+                 alpha=line_alpha, label=reg_label2)
 
-        # 绘制各考生三类成绩对比图
-        self.visualize_score_line_chart(filtered_df)
+        # 总成绩部分
+        y3 = self.analysis_df['总成绩']
+        ax2.plot(x, y3, color='tab:green', label='总成绩')
 
-        # 将结果转化为JSON格式返回
-        return {
-            'descriptive_statistics': stats.to_dict(),
-            'pearson_correlation': pearson_corr.to_dict(),
-            'spearman_correlation': spearman_corr.to_dict()
+        # 计算并添加回归线
+        slope3, intercept3 = np.polyfit(x, y3, 1)
+        reg_label3 = f'y={slope3:.3f}x+{intercept3:.1f}'
+        ax2.plot(x, slope3 * x + intercept3,
+                 color='tab:green', linestyle=line_style,
+                 alpha=line_alpha, label=reg_label3)
+
+        # 坐标轴设置
+        ax1.set_ylim(340, 450)
+        ax1.legend(loc='upper right', ncol=2, fontsize=9)
+        ax1.tick_params(labelbottom=False)
+
+        ax2.set_ylim(70, 100)
+        ax2.legend(loc='upper right', ncol=3, fontsize=9)
+
+        # 断轴效果（保持原样）
+        d = 0.5
+        kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+                      linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+        ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
+        ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
+
+        output_path = f"../data/pic/软微-录取/{self.year}-scores.png"
+        self._ensure_dir_exists(output_path)
+        plt.savefig(output_path, dpi=900)
+        plt.close()
+
+    def calculate_statistics(self):
+        """计算并返回统计指标"""
+        # 去掉序号这一列
+        df_stats = self.analysis_df.drop(columns=['序号'])
+        stats = {
+            'mean': df_stats.mean(),
+            'median': df_stats.median(),
+            '75%': df_stats.quantile(0.75),
+            'min': df_stats.min(),
+            'max': df_stats.max(),
+            'std': df_stats.std()
         }
+        return pd.DataFrame(stats).T.round(2)
+
+
+def main(path):
+    analyzer = AdmissionDataAnalyzer(path)
+
+    # 绘制图形
+    analyzer.save_pairplot()
+    analyzer.save_corr_heatmap()
+    analyzer.save_split_axis_plot()
+
+    # 计算并显示统计量
+    stats_df = analyzer.calculate_statistics()
+    print("统计分析结果：")
+    print(stats_df)
 
 
 # 使用示例
 if __name__ == "__main__":
-    analyzer = ExamScoreAnalyzer(df_path="../data/rw/2025录取.xlsx")
-    analysis_results = analyzer.run_analysis()
-    import json
-
-    # 打印JSON格式的分析结果
-    print(json.dumps(analysis_results, indent=4, ensure_ascii=False))
+    main(path="../data/rw/2025录取.xlsx")
+    # main(path="../data/rw/2024录取.xlsx")
+    main(path="../data/rw/2023录取.xlsx")
+    main(path="../data/rw/2022录取.xlsx")
+    main(path="../data/rw/2021录取.xlsx")
+    main(path="../data/rw/2020录取.xlsx")
