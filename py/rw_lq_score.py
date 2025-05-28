@@ -132,7 +132,7 @@ class AdmissionDataAnalyzer:
             'max': df_stats.max(),
             'std': df_stats.std()
         }
-        return pd.DataFrame(stats).T.round(2)
+        return pd.DataFrame(stats).round(2)
 
 
 def main(path):
@@ -152,7 +152,7 @@ def main(path):
 # 使用示例
 if __name__ == "__main__":
     main(path="../data/rw/2025录取.xlsx")
-    # main(path="../data/rw/2024录取.xlsx")
+    main(path="../data/rw/2024录取.xlsx")
     main(path="../data/rw/2023录取.xlsx")
     main(path="../data/rw/2022录取.xlsx")
     main(path="../data/rw/2021录取.xlsx")

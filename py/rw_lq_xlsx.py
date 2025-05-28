@@ -82,6 +82,8 @@ def main(pdf_path, save_path):
 if __name__ == "__main__":
     main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2025年硕士招生拟录取公示名单.pdf",
          save_path="../data/rw/2025录取.xlsx")
+    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2024年硕士招生拟录取公示名单.pdf",
+         save_path="../data/rw/2024录取.xlsx")
     main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2023年硕士招生拟录取公示名单.pdf",
          save_path="../data/rw/2023录取.xlsx")
     main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2022年硕士招生拟录取公示名单.pdf",
