@@ -53,14 +53,14 @@ class ExamAnalyzer:
 
         # 创建热力图
         plt.figure(figsize=(10, 8))
-        mask = np.triu(np.ones_like(corr, dtype=bool))
+        # mask = np.triu(np.ones_like(corr, dtype=bool))
         sns.heatmap(
             corr,
             annot=True,
             fmt=".2f",
             cmap='coolwarm',
             center=0,
-            mask=mask,
+            # mask=mask,
             vmin=-1,
             vmax=1,
             linewidths=0.5
@@ -112,7 +112,7 @@ def main(file_path):
 if __name__ == "__main__":
     # 分析多个年份的数据
     years_files = [
-        # "../data/rw/2025初试.xlsx",
+        "../data/rw/2025初试.xlsx",
         "../data/rw/2024初试.xlsx",
         # "../data/rw/2023初试.xlsx",
         "../data/rw/2022初试.xlsx",
