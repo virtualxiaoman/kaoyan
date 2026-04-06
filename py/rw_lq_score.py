@@ -151,9 +151,10 @@ def main(path):
 
 # 使用示例
 if __name__ == "__main__":
-    main(path="../data/rw/2025录取.xlsx")
-    main(path="../data/rw/2024录取.xlsx")
-    main(path="../data/rw/2023录取.xlsx")
-    main(path="../data/rw/2022录取.xlsx")
-    main(path="../data/rw/2021录取.xlsx")
-    main(path="../data/rw/2020录取.xlsx")
+    main(path="../data/rw/2026录取.xlsx")
+    # main(path="../data/rw/2025录取.xlsx")
+    # main(path="../data/rw/2024录取.xlsx")
+    # main(path="../data/rw/2023录取.xlsx")
+    # main(path="../data/rw/2022录取.xlsx")
+    # main(path="../data/rw/2021录取.xlsx")
+    # main(path="../data/rw/2020录取.xlsx")

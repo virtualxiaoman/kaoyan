@@ -80,15 +80,17 @@ def main(pdf_path, save_path):
 
 # 使用示例
 if __name__ == "__main__":
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2025年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2025录取.xlsx")
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2024年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2024录取.xlsx")
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2023年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2023录取.xlsx")
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2022年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2022录取.xlsx")
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2021年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2021录取.xlsx")
-    main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2020年硕士招生拟录取公示名单.pdf",
-         save_path="../data/rw/2020录取.xlsx")
+    main(pdf_path="D:/Users/Administrator/Desktop/小满の大学笔记/考研/资料/软微/软微2026年硕士招生拟录取公示名单.pdf",
+         save_path="../data/rw/2026录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2025年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2025录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2024年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2024录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2023年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2023录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2022年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2022录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2021年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2021录取.xlsx")
+    # main(pdf_path="D:/HP/Desktop/小满の大学笔记/考研/资料/软微/软微2020年硕士招生拟录取公示名单.pdf",
+    #      save_path="../data/rw/2020录取.xlsx")

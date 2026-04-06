@@ -112,6 +112,7 @@ def main(file_path):
 if __name__ == "__main__":
     # 分析多个年份的数据
     years_files = [
+        "../data/rw/2026初试.xlsx",
         "../data/rw/2025初试.xlsx",
         "../data/rw/2024初试.xlsx",
         # "../data/rw/2023初试.xlsx",
